@@ -2,47 +2,37 @@
 require_once 'util.php';
 require_once "head.php";
    session_start();
-
+   $_SESSION['name_value'] = '';
+   $_SESSION['email_value'] = '';
    if(isset($_POST['cancel'])){
+    $_SESSION['email_value'] = '';
+    $_SESSION['name_value'] = '';
     header('Location: index.php');
     return;
    }
 if(isset($_POST['email']) && isset($_POST['pass']) && isset($_POST['name'])){
- if(strlen($_POST['email']) < 1  || strlen($_POST['pass']) < 1){
-    $_SESSION['error'] = "All fields are required";
+$msg = validateSignUp();
+if(is_string($msg)){
+    $_SESSION['name_value'] = $_POST['name'];
+    $_SESSION['email_value'] = $_POST['email'];
+    $_SESSION['error'];
     header('Location: signUp.php');
     return;
- }
- if(strpos($_POST['email'] , "@") === false ){
-    $_SESSION['error'] = "Invalid email adress";
-    header('Location:signUp.php');
-    return;
- }
- if(strlen($_POST['pass']) < 3){
-    $_SESSION['error'] = "Password is to short";
-    header('Location: signUp.php');
-    return;
- };
+};
     $stmt = $pdo->prepare('SELECT email FROM users where email = :em');
     $stmt->execute(array(
         "em" => $_POST['email']
     ));
     $row = $stmt->fetch(PDO::FETCH_ASSOC);
     if ($row['email'] != $_POST['email'] ) {;
-        $salt = 'XyZzy12*_';
-        $pass = hash('md5' ,  $salt . $_POST['pass']); 
-        $sql = ("INSERT INTO users(name,email,password) VALUES (:nam,:em,:pass)");
-       $stmt = $pdo ->prepare($sql);
-       $stmt->execute(array(
-           ':nam' => $_POST['name'],
-           ':em' => $_POST['email'],
-           ':pass' => $pass
-       ));
+        insertUsers($pdo);
         $_SESSION['success'] = "Success";
         header("Location: index.php");
         return;
     } else {
         $_SESSION['error'] = "Account with this email exists";
+        $_SESSION['name_value'] = $_POST['name'];
+        $_SESSION['email_value'] = $_POST['email'];
         header('Location: signUp.php');
         return;
 }
@@ -58,8 +48,8 @@ if(isset($_POST['email']) && isset($_POST['pass']) && isset($_POST['name'])){
             <h1>Sign Up</h1>
             <?= flashMessage() ?>
          <form method="post">
-            <p>Login: <input type="text" name="name"> </p>
-            <p>Email: <input type="text" name="email"> </p>
+            <p>Login: <input type="text" name="name" value = "<?= htmlentities($_SESSION['name_value']) ?>"> </p>
+            <p>Email: <input type="text" name="email" value= "<?= htmlentities($_SESSION['email_value']) ?>"> </p>
             <p>Password: <input type="password" name="pass"> </p>
             <input type="submit" value="Sign up">
             <input type="submit" value="Cancel" name="cancel">
