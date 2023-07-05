@@ -1,9 +1,8 @@
 <?php
 require_once 'util.php';
 require_once "head.php";
+require_once "pdo.php";
    session_start();
-   $_SESSION['name_value'] = '';
-   $_SESSION['email_value'] = '';
    if(isset($_POST['cancel'])){
     $_SESSION['email_value'] = '';
     $_SESSION['name_value'] = '';
@@ -11,14 +10,13 @@ require_once "head.php";
     return;
    }
 if(isset($_POST['email']) && isset($_POST['pass']) && isset($_POST['name'])){
-$msg = validateSignUp();
-if(is_string($msg)){
-    $_SESSION['name_value'] = $_POST['name'];
-    $_SESSION['email_value'] = $_POST['email'];
-    $_SESSION['error'];
-    header('Location: signUp.php');
-    return;
-};
+    $msg = validateSignUp();
+    if(is_string($msg)){
+        $_SESSION['name_value'] = $_POST['name'];
+        $_SESSION['email_value'] = $_POST['email'];
+        header('Location:signUP.php');
+        return;
+    }
     $stmt = $pdo->prepare('SELECT email FROM users where email = :em');
     $stmt->execute(array(
         "em" => $_POST['email']
@@ -26,11 +24,12 @@ if(is_string($msg)){
     $row = $stmt->fetch(PDO::FETCH_ASSOC);
     if ($row['email'] != $_POST['email'] ) {;
         insertUsers($pdo);
+        $_SESSION['name'] = $_POST['name'];
         $_SESSION['success'] = "Success";
         header("Location: index.php");
         return;
     } else {
-        $_SESSION['error'] = "Account with this email exists";
+        $_SESSION['error'] = "Account with this email already exists";
         $_SESSION['name_value'] = $_POST['name'];
         $_SESSION['email_value'] = $_POST['email'];
         header('Location: signUp.php');

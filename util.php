@@ -23,6 +23,20 @@ require_once "pdo.php";
             }
         }
         }
+        function validateSignUp(){
+            if(strlen($_POST['email']) < 1  || strlen($_POST['pass']) < 1){
+                $_SESSION['error'] = "All fields are required";
+                return "All fields are required";
+             }
+             if(strpos($_POST['email'] , "@") === false ){
+                $_SESSION['error'] = "Invalid email adress";
+                return "Invalid email adress";
+             }
+             if(strlen($_POST['pass']) < 3){
+                $_SESSION['error'] = "Password is to short";
+                return "Password is to short";
+             };
+        }
 
         function deniedAccess(){
             if (!isset($_SESSION['user_id'])) {
@@ -133,6 +147,17 @@ require_once "pdo.php";
                         ':iid' => $institution_id));
                 }
                 $rank++;
+               }
+
+               function insertUsers($pdo){
+                $salt = 'XyZzy12*_';
+                $pass = hash('md5', $salt . $_POST['pass']);
+                $stmt = $pdo -> prepare('INSERT INTO users (name,email,password) values (:nam,:email,:pass)');
+                $stmt->execute(array(
+                    ":nam" => $_POST['name'],
+                    ":email" => $_POST['email'],
+                    "pass" => $pass
+                ));
                }
 
 
