@@ -17,7 +17,7 @@ session_start();
         <?php
         flashMessage();
         if (!isset($_SESSION['user_id'])) { ?>
-        <p><a href="signUp.php" >Sign up</a> or <a href="login.php">Log in</a></p>
+            <p><a href="signUp.php">Sign up</a> or <a href="login.php">Log in</a></p>
         <?php } else { ?>
             <p>
                 <a href="logout.php" name="logout">Logout</a>
@@ -39,19 +39,26 @@ session_start();
             </tbody>
         </table>
     </div>
-
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
     <script>
-        $.getJSON('./JSON/indexJSON.php', function (data) {
+
+        $.getJSON('./JSON/profileJSON.php', function (data) {
             $('#mytab').empty();
             found = false;
             for (let i = 0; i < data.length; i++) {
                 entry = data[i];
                 found = true;
-                console.log(data[i].profile_id)
-                $('#mytab').append('<tr><td>' + '<a href="view.php?profile_id=' + entry.profile_id + '">' + entry.first_name + "\n" + entry.last_name + "</a>" + '</td><td>'
-                    + entry.headline + "</td><td>"
-                    <?php if (isset($_SESSION['user_id'])) { ?> + '<a href="edit.php?profile_id=' + entry.profile_id + '">' + "Edit</a>" + "\n"
-                        + '<a href="delete.php?profile_id=' + entry.profile_id + '">' + "Delete </a> </td></tr>" <?php } ?> )
+                console.log(data[i])
+                $('#mytab').append('<tr><td>' + 
+                <?php if (isset($_SESSION['user_id'])) { ?> '<a href="view.php?profile_id=' + entry.profile_id + '">'
+                    + entry.first_name + "\n" + entry.last_name + "</a>"
+                    <?php } else { ?>
+                        entry.first_name + "\n" + entry.last_name
+                        <?php } ?>
+                            + '</td><td>'
+                            + entry.headline + "</td><td>"
+                            <?php if (isset($_SESSION['user_id'])) { ?> + '<a href="edit.php?profile_id=' + entry.profile_id + '">' + "Edit</a>" + "\n"
+                                + '<a href="delete.php?profile_id=' + entry.profile_id + '">' + "Delete </a> </td></tr>" <?php } ?> )
             }
         if (!found) {
             $("#mytab").append("<tr><td>No entries found </td></tr>")
@@ -75,7 +82,7 @@ session_start();
         flex-direction: column;
         align-items: center;
         justify-content: center;
-       
+
         max-width: max-content;
     }
 </style>

@@ -5,7 +5,7 @@ require_once "util.php";
 require_once "head.php";
 if (deniedAccess()) {
 } else {
-    if(isset($_POST['cancel'])){
+    if (isset($_POST['cancel'])) {
         header('Location: index.php');
         return;
     }

@@ -5,6 +5,7 @@ require_once "head.php";
 session_start();
 
 if (isset($_POST['cancel'])) {
+    $_SESSION['email'] = '';
     header('Location: index.php');
     return;
 }
@@ -25,6 +26,9 @@ if (isset($_POST['email']) && isset($_POST['pass'])) {
         return;
     } else {
         $_SESSION['error'] = "Invalid email or password";
+        $_SESSION['email'] = $_POST['email'];
+        header('Location: login.php');
+        return;
     }
 }
 ?>
@@ -40,7 +44,10 @@ if (isset($_POST['email']) && isset($_POST['pass'])) {
 
         <?php flashMessage() ?>
         <form action="login.php" method="post" id="myform">
-            <p>Email: <input type="text" id="email" name="email"> </p>
+            <p>Email: <input type="text" id="email" name="email"
+                    value="<?php if (isset($_SESSION['email'])) {
+                        htmlentities($_SESSION['email']);
+                    } ?>"> </p>
             <p>Password: <input type="password" name="pass" id="password"> </p>
             <div id="controls">
                 <input type="submit" id="submit" onclick="return doValidate()" value="Log In">

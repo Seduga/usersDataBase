@@ -56,9 +56,9 @@ if (isset($_POST['first_name']) && isset($_POST['last_name']) && isset($_POST['e
 
     $stmt = $pdo->prepare('DELETE FROM position where profile_id=:pid');
     $stmt->execute(array(":pid" => $_REQUEST['profile_id']));
-    insertPos($pdo,$_REQUEST['profile_id']);
+    insertPos($pdo, $_REQUEST['profile_id']);
 
-    
+
     $stmt = $pdo->prepare("DELETE FROM education where profile_id = :pid");
     $stmt->execute(array(':pid' => $_REQUEST['profile_id']));
     insertEdu($pdo, $_REQUEST['profile_id']);
@@ -100,7 +100,7 @@ $profile_id = $_REQUEST['profile_id'];
             <p>Last Name: <input type="text" name="last_name" value="<?= $ln ?> "> </p>
             <p>Email: <input type="text" name="email" value="<?= $em ?> "> </p>
             <p>Headline: <input type="text" name="headline" value="<?= $headl ?> "> </p>
-            <p>Summary: </p> <textarea name="summary" id="" cols="30" rows="10"><?= $sum ?></textarea> 
+            <p>Summary: </p> <textarea name="summary" id="" cols="30" rows="10"><?= $sum ?></textarea>
             <input type="hidden" name="profile_id" value="<?= $profile_id ?>">
             <?php
             $pos = 0;
@@ -145,48 +145,48 @@ $profile_id = $_REQUEST['profile_id'];
         </form>
     </div>
     <script>
-    countPos = <?= $pos ?>;
-    countEdu = <?= $edu ?>;
-    $(document).ready(function () {
-        $('#addPos').click(function (event) {
-            event.preventDefault();
-            if (countPos >= 9) {
-                alert('Maximum position entries exceeded');
-                return;
-            }
-            countPos++;
-            $('#posField').append(
-                '<div id="position' + countPos + '">\
+        countPos = <?= $pos ?>;
+        countEdu = <?= $edu ?>;
+        $(document).ready(function () {
+            $('#addPos').click(function (event) {
+                event.preventDefault();
+                if (countPos >= 9) {
+                    alert('Maximum position entries exceeded');
+                    return;
+                }
+                countPos++;
+                $('#posField').append(
+                    '<div id="position' + countPos + '">\
             <p>Year: <input type="text" name="year'+ countPos + '" value="">\
             <input type="button" value="-" \
             onclick="$(\'#position'+ countPos + '\').remove();return false;"</p> \
             <p> Description: </p> \
             <textarea name="desc'+ countPos + '" rows="4" cols="15"></textarea>  \
             </div>'
-            )
-            console.log(countPos)
-        })
-        $('#addEducation').click(function (event) {
-            event.preventDefault();
-            if (countEdu >= 9) {
-                alert('Maximum position entries exceeded');
-                return;
-            }
-            countEdu++
-            $('#educationField').append(
-                '<div id="education' + countEdu + '">\
+                )
+                console.log(countPos)
+            })
+            $('#addEducation').click(function (event) {
+                event.preventDefault();
+                if (countEdu >= 9) {
+                    alert('Maximum position entries exceeded');
+                    return;
+                }
+                countEdu++
+                $('#educationField').append(
+                    '<div id="education' + countEdu + '">\
                 <p>Year: <input type="text" name="edu_year'+ countEdu + '" value="">\
                 <input type="button" value="-" \
             onclick="$(\'#education'+ countEdu + '\').remove();return false;"</p> \
                 <p>School : <input type="text" class="school" name="edu_school'+ countEdu + '" value=""/>\
                 </div>'
 
-            )
-            $('.school').autocomplete({ source: "school.php" });
-        })
+                )
+                $('.school').autocomplete({ source: "school.php" });
+            })
 
-    })
-</script>
+        })
+    </script>
 </body>
 
 
