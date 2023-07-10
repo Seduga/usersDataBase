@@ -4,37 +4,30 @@ require_once "head.php";
 require_once "pdo.php";
 session_start();
 if (isset($_POST['cancel'])) {
-    $_SESSION['email_value'] = '';
-    $_SESSION['name_value'] = '';
     header('Location: index.php');
     return;
 }
 if (isset($_POST['email']) && isset($_POST['pass']) && isset($_POST['name'])) {
     $msg = validateSignUp();
-    if (is_string($msg)) {
-        $_SESSION['name_value'] = $_POST['name'];
-        $_SESSION['email_value'] = $_POST['email'];
+    if (is_string($msg)) {;
         header('Location:signUP.php');
         return;
     }
-    $stmt = $pdo->prepare('SELECT email FROM users where email = :em');
-    $stmt->execute(
-        array(
-            "em" => $_POST['email']
-        )
-    );
-    $row = $stmt->fetch(PDO::FETCH_ASSOC);
-    if ($row['email'] != $_POST['email']) {
-        ;
+    $user = User::getUser($pdo, $_POST['email']);
+    if (!$user) {
         insertUsers($pdo);
-        $_SESSION['name'] = $_POST['name'];
-        $_SESSION['success'] = "Success";
-        header("Location: index.php");
-        return;
+        $user = User::getUser($pdo, $_POST['email']);
+        if($user){
+            $_SESSION['name'] = $user->getName();
+            $_SESSION['user_id'] = $user->getUserId();
+            $row = $stmt->fetch(PDO::FETCH_ASSOC);
+            $_SESSION['success'] = "Success";
+            header("Location: index.php");
+            return;
+        }
+        
     } else {
         $_SESSION['error'] = "Account with this email already exists";
-        $_SESSION['name_value'] = $_POST['name'];
-        $_SESSION['email_value'] = $_POST['email'];
         header('Location: signUp.php');
         return;
     }
@@ -53,11 +46,9 @@ if (isset($_POST['email']) && isset($_POST['pass']) && isset($_POST['name'])) {
         <?= flashMessage() ?>
         <form method="post">
             <p>Login: <input type="text" name="name"
-                    value="<?php if (isset($_SESSION['name_value']))
-                        htmlentities($_SESSION['name_value']) ?>"> </p>
+                    value=""> </p>
                 <p>Email: <input type="text" name="email"
-                        value="<?php if (isset($_SESSION['email_value']))
-                        htmlentities($_SESSION['email_value']) ?>"> </p>
+                        value=""> </p>
                 <p>Password: <input type="password" name="pass"> </p>
                 <input type="submit" value="Sign up">
                 <input type="submit" value="Cancel" name="cancel">

@@ -18,7 +18,6 @@ deniedAccess();
         </ul>
         <h4>Positions: </h4>
         <ul id='posList'>
-
         </ul>
         <h4>Education: </h4>
         <ul id="eduList">
@@ -27,51 +26,14 @@ deniedAccess();
         ?>
         <a href="index.php">Done</a>
     </div>
+    <script src="./JavaScript/view.js"></script>
     <script>
         let p = '';
         function $_GET(key) {
             p = window.location.search;
             p = p.match(new RegExp([key] + '=([^&=]+)'));
         }
-        $.getJSON('./JSON/profileJSON.php', function (data) {
-            $_GET()
-            let pfid = p[1] - 1
-            console.log(data)
-            $('#mainList').empty();
-            entry = data[pfid];
-            $("#mainList").append(
-                "<li>First Name: " + entry.first_name + "</li>" +
-                "<li>Last Name: " + entry.last_name + "</li>" +
-                "<liEmail: " + entry.email + "</li>" +
-                "<li>Headline: " + entry.headline + "</li>" +
-                "<li>Summary: " + entry.summary + "</li>"
-            )
-        })
-        $.getJSON('./JSON/educationJSON.php', function (data) {
-            $_GET()
-            let pfid = p[1] - 1
-            $('#eduList').empty();
-            for (let i = 0; i < data.length; i++) {
-                if (data[i].profile_id == pfid + 1) {
-                    $('#eduList').append(
-                        "<li>" + data[i].year + ":" + "\n" + data[i].name + "</li>"
-                    )
-                }
-            }
-        })
-        $.getJSON('./JSON/positionJSON.php', function (data) {
-            $_GET();
-            let pfid = p[1] - 1
-            console.log(data)
-            $('#posList').empty();
-            for (let i = 0; i < data.length; i++) {
-                if (data[i].profile_id == pfid + 1) {
-                    $('#posList').append(
-                        "<li>" + data[i].year + ":" + "\n" + data[i].description + "</li>"
-                    )
-                }
-            }
-        })
+        
     </script>
 </body>
 

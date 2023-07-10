@@ -48,7 +48,6 @@ session_start();
             for (let i = 0; i < data.length; i++) {
                 entry = data[i];
                 found = true;
-                console.log(data[i])
                 $('#mytab').append('<tr><td>' + 
                 <?php if (isset($_SESSION['user_id'])) { ?> '<a href="view.php?profile_id=' + entry.profile_id + '">'
                     + entry.first_name + "\n" + entry.last_name + "</a>"

@@ -1,5 +1,35 @@
 <?php
 require_once "pdo.php";
+class User{
+    public $user;
+    public function __construct(array $user)
+    {
+        $this->user = $user;
+    }
+    static function getUser($pdo, $email): User|null{
+        $stmt = $pdo->query("SELECT * from users Where email = '$email'");
+        $email = $_POST['email'];
+        $user = $stmt->fetch(PDO::FETCH_ASSOC);
+        if ($user) {
+            return new User($user);
+        }
+        return null;
+    }
+    public function getName () {
+        return $this->user['name'];
+    }
+    public function getEmail(){
+        return $this->user['email'];
+        
+    }
+    public function getUserId(){
+        return $this->user['user_id'];
+    }
+    public function getUserPass(){
+        return $this->user['password'];
+    }
+}
+
 function flashMessage()
 {
     if (isset($_SESSION['error'])) {
@@ -85,34 +115,6 @@ function validateEdu()
     return true;
 }
 
-function loadPos($pdo, $profile_id)
-{
-    $stmt = $pdo->prepare('SELECT * from position where profile_id = :prof ORDER By rank');
-    $stmt->execute(
-        array(
-            ':prof' => $profile_id
-        )
-    );
-    $positions = array();
-    while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-        $positions[] = $row;
-    }
-    return $positions;
-}
-
-function loadEducation($pdo, $profile_id)
-{
-    $stmt = $pdo->prepare('SELECT year,name from education JOIN institution on education.institution_id = institution.institution_id
-                  where profile_id = :prof order by rank');
-    $stmt->execute(
-        array(
-            ':prof' => $profile_id
-        )
-    );
-    // fetchAll заменяет строки  while($row = $stmt->fetch(PDO::FETCH_ASSOC)){ $positions[] = $row;}
-    $educations = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    return $educations;
-}
 
 function insertPos($pdo, $profile_id)
 {
@@ -137,7 +139,6 @@ function insertPos($pdo, $profile_id)
         $rank++;
     }
 }
-
 function insertEdu($pdo, $profile_id)
 {
     $rank = 1;
@@ -175,6 +176,21 @@ function insertEdu($pdo, $profile_id)
    
 }
 
+function insertProfile($pdo){
+    $sql = 'INSERT INTO profile(user_id,first_name,last_name,email,headline,summary ) VALUES (:uid,:fn,:ln,:em,:he,:sum)';
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute(
+                array(
+                    ":uid" => ($_SESSION['user_id']),
+                    ':fn' => ($_POST['first_name']),
+                    ':ln' => ($_POST['last_name']),
+                    ':em' => ($_POST['email']),
+                    ':he' => ($_POST['headline']),
+                    ':sum' => ($_POST['summary']),
+                )
+            );
+}
+
 function insertUsers($pdo)
 {
     $salt = 'XyZzy12*_';
@@ -189,5 +205,18 @@ function insertUsers($pdo)
     );
 }
 
-
+function updateProfile($pdo,$profile_id){
+    $sql = "UPDATE profile SET  first_name = :fn, last_name = :ln , email = :em , headline = :he, summary = :sum  WHERE profile_id = :pfid ";
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute(
+        array(
+            ':fn' => $_POST['first_name'],
+            ':ln' => $_POST['last_name'],
+            ':em' => $_POST['email'],
+            ':he' => $_POST['headline'],
+            ':sum' => $_POST['summary'],
+            ':pfid' => $profile_id,
+        )
+    );
+}
 ?>

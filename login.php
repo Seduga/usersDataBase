@@ -3,37 +3,29 @@ require_once "pdo.php";
 require_once "util.php";
 require_once "head.php";
 session_start();
-
 if (isset($_POST['cancel'])) {
-    $_SESSION['email'] = '';
     header('Location: index.php');
     return;
 }
-
-
 if (isset($_POST['email']) && isset($_POST['pass'])) {
     unset($_SESSION['email']);
+    $user = User::getUser($pdo, $_POST['email']);
     $salt = 'XyZzy12*_';
-    $check = hash('md5', $salt . $_POST['pass']);
-    $stmt = $pdo->prepare('SELECT user_id, name FROM users  WHERE email = :em AND password = :pw');
-    $stmt->execute(array(':em' => $_POST['email'], ':pw' => $check));
-    $row = $stmt->fetch(PDO::FETCH_ASSOC);
-    if ($row !== false) {
-        $_SESSION['name'] = $row['name'];
-        $_SESSION['user_id'] = $row['user_id'];
+    $pass = hash("md5" , $salt . $_POST['pass']);
+    if ($user->getEmail() == $_POST['email'] && $user->getUserPass() == $pass ) {
+        $_SESSION['name'] = $user->getName();
+        $_SESSION['user_id'] = $user->getUserId();
         $_SESSION['success'] = "Logged in";
         header("Location: index.php");
         return;
     } else {
         $_SESSION['error'] = "Invalid email or password";
-        $_SESSION['email'] = $_POST['email'];
         header('Location: login.php');
         return;
     }
 }
 ?>
 <html>
-
 <head>
     <title>Daniil Sieedugin</title>
 </head>

@@ -9,27 +9,26 @@ if (deniedAccess()) {
         header('Location: index.php');
         return;
     }
-
     if (isset($_POST['first_name']) && isset($_POST['last_name']) && isset($_POST['email']) && isset($_POST['headline']) && isset($_POST['summary'])) {
         $msg = validateProfile();
         if (is_string($msg)) {
             $_SESSION['error'] = "All fields are required";
             header('Location: add.php');
             return;
+        }
+        $msg = validatePos();
+        if (is_string($msg)) {
+            $_SESSION['error'] = "All fields are required";
+            header('Location: add.php ');
+            return;
+        }
+        $msg = validateEdu();
+        if (is_string($msg)) {
+            $_SESSION['error'] = "All fields are required";
+            header('Location: add.php');
+            return;
         } else {
-
-            $sql = 'INSERT INTO profile(user_id,first_name,last_name,email,headline,summary ) VALUES (:uid,:fn,:ln,:em,:he,:sum)';
-            $stmt = $pdo->prepare($sql);
-            $stmt->execute(
-                array(
-                    ":uid" => ($_SESSION['user_id']),
-                    ':fn' => ($_POST['first_name']),
-                    ':ln' => ($_POST['last_name']),
-                    ':em' => ($_POST['email']),
-                    ':he' => ($_POST['headline']),
-                    ':sum' => ($_POST['summary']),
-                )
-            );
+            insertProfile($pdo);
             $profile_id = $pdo->lastInsertId();
             insertEdu($pdo, $profile_id);
             insertPos($pdo, $profile_id);
@@ -37,9 +36,7 @@ if (deniedAccess()) {
             header('Location: index.php');
             return;
         }
-
     }
-
 }
 
 ?>
